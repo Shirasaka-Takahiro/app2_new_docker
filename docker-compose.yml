@@ -1,0 +1,36 @@
+version: "3"
+services:
+  web01:
+    build: ./nginx
+    container_name: web01
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf/terraform-gui.com.conf:/etc/nginx/conf.d/terraform-gui.com.conf
+      - socket:/tmp
+
+  app01:
+    build: ./flask
+    container_name: app01
+    volumes:
+      - ./flask/app2_new:/var/www/vhosts/terraform-gui.com/public_html
+      - socket:/tmp
+    restart: always
+    command: uwsgi --ini /var/www/vhosts/terraform-gui.com/public_html/uwsgi.ini
+    depends_on:
+      - web01
+  
+  db01:
+    build: ./mysql
+    container_name: db01
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/my.cnf
+    ports:
+      - "3306:3306"
+
+volumes:
+  socket:

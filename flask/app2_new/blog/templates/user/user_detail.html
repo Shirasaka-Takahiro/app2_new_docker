@@ -1,0 +1,9 @@
+<!-- user_detail.html -->
+{% extends 'layout.html' %}
+{% block content %}
+  <h1>ユーザー詳細</h1>
+  <p>ID: {{ user.id }}</p>
+  <p>ユーザー名: {{ user.username }}</p>
+  <p>管理者: {% if user.is_admin %}Yes{% else %}No{% endif %}</p>
+  <a href="{{ url_for('user_func.user_list') }}">戻る</a>
+{% endblock %}
