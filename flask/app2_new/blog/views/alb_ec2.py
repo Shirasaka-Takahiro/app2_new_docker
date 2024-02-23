@@ -22,11 +22,6 @@ alb_ec2 = Blueprint('alb_ec2', __name__, template_folder="templates/alb_ec2")
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@alb_ec2.route('/tf_exec', methods=['GET'])
-@login_required
-def tf_exec():
-    return render_template('alb_ec2/tf_exec.html')
-
 @alb_ec2.route('/tf_exec/alb_ec2', methods=['GET'])
 @login_required
 def tf_exec_alb_ec2():

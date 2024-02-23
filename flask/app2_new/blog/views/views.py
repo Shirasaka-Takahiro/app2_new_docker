@@ -129,7 +129,6 @@ def employee_delete(id):
     flash('削除が完了しました。', 'success')
     return redirect(url_for('employee_list'))
 
-
 @app.route('/tf_exec/alb_ec2_route53', methods=['GET'])
 @login_required
 def tf_exec_alb_ec2_route53():
