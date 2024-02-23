@@ -120,7 +120,7 @@ def alb_ec2_tf_init():
                     db.session.commit()
 
                 flash('Initが成功しました', 'success')
-                return render_template('alb_ec2/tf_init.html')
+                return render_template('alb_ec2/alb_ec2_tf_init.html')
 
             except subprocess.CalledProcessError as e:
                 # エラーメッセージを整形してファイルに書き込む
@@ -131,11 +131,11 @@ def alb_ec2_tf_init():
                     init_output_file.write(formatted_error_output)
 
                 flash('Initに失敗しました。実行結果を確認してください', 'error')
-                return render_template('alb_ec2/tf_init.html')
+                return render_template('alb_ec2/alb_ec2_tf_init.html')
     
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
-    return render_template('alb_ec2/tf_init.html', active_workspace=active_workspace, user_projects=user_projects)
+    return render_template('alb_ec2/alb_ec2_tf_init.html', active_workspace=active_workspace, user_projects=user_projects)
 
 ##Terraform Initの実行結果確認
 @alb_ec2.route('/tf_exec/alb_ec2/view_init_output')
@@ -229,7 +229,7 @@ def alb_ec2_tf_plan():
                     db.session.commit()
 
                     flash('Planが成功しました', 'success')
-                    return render_template('alb_ec2/tf_plan.html')
+                    return render_template('alb_ec2/alb_ec2_tf_plan.html')
 
             except subprocess.CalledProcessError as e:
                 # エラーメッセージを整形してファイルに書き込む
@@ -240,11 +240,11 @@ def alb_ec2_tf_plan():
                     plan_output_file.write(formatted_error_output)
 
                 flash('Planに失敗しました。実行結果を確認してください', 'error')
-                return render_template('alb_ec2/tf_plan.html')
+                return render_template('alb_ec2/alb_ec2_tf_plan.html')
             
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
-    return render_template('alb_ec2/tf_plan.html', active_workspace=active_workspace, user_projects=user_projects)
+    return render_template('alb_ec2/alb_ec2_tf_plan.html', active_workspace=active_workspace, user_projects=user_projects)
 
 ##Terraform Planの実行結果確認
 @alb_ec2.route('/tf_exec/alb_ec2/view_plan_output')
@@ -341,7 +341,7 @@ def alb_ec2_tf_apply():
                     db.session.commit()
 
                     flash('Applyが成功しました', 'success')
-                    return render_template('alb_ec2/tf_apply.html')
+                    return render_template('alb_ec2/alb_ec2_tf_apply.html')
 
             except subprocess.CalledProcessError as e:
                 # エラーメッセージを整形してファイルに書き込む
@@ -352,11 +352,11 @@ def alb_ec2_tf_apply():
                     apply_output_file.write(formatted_error_output)
 
                 flash('Applyに失敗しました。実行結果を確認してください', 'error')
-                return render_template('alb_ec2/tf_apply.html')
+                return render_template('alb_ec2/alb_ec2_tf_apply.html')
     
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
-    return render_template('alb_ec2/tf_apply.html', active_workspace=active_workspace, user_projects=user_projects)
+    return render_template('alb_ec2/alb_ec2_tf_apply.html', active_workspace=active_workspace, user_projects=user_projects)
 
 ##Terraform Applyの実行結果確認
 @alb_ec2.route('/tf_exec/alb_ec2/view_apply_output')
@@ -450,7 +450,7 @@ def alb_ec2_tf_destroy():
                     db.session.commit()
 
                     flash('Destroyが成功しました', 'success')
-                    return render_template('alb_ec2/tf_destroy.html')
+                    return render_template('alb_ec2/alb_ec2_tf_destroy.html')
 
             except subprocess.CalledProcessError as e:
                 # エラーメッセージを整形してファイルに書き込む
@@ -461,11 +461,11 @@ def alb_ec2_tf_destroy():
                     destroy_output_file.write(formatted_error_output)
 
                 flash('Destroyに失敗しました。実行結果を確認してください', 'error')
-                return render_template('alb_ec2/tf_destroy.html')
+                return render_template('alb_ec2/alb_ec2_tf_destroy.html')
 
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
-    return render_template('alb_ec2/tf_destroy.html', active_workspace=active_workspace, user_projects=user_projects)
+    return render_template('alb_ec2/alb_ec2_tf_destroy.html', active_workspace=active_workspace, user_projects=user_projects)
 
 ##Terraform Destroyの実行結果確認
 @alb_ec2.route('/tf_exec/alb_ec2/view_destroy_output')
@@ -514,5 +514,5 @@ def tf_exec_alb_ec2_delete_tfvars():
             os.remove(tfvars_path)
         else:
             flash('tfvarsファイルが見つかりません', 'error')
-    return render_template('alb_ec2/tf_destroy.html')
+    return render_template('alb_ec2/alb_ec2_tf_destroy.html')
     flash('tfvarsファイルを削除しました', 'success')

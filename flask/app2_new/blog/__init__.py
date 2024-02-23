@@ -46,3 +46,7 @@ app.register_blueprint(tf_exec_func)
 ##ALB + EC2用Blueprint
 from blog.views.alb_ec2 import alb_ec2
 app.register_blueprint(alb_ec2)
+
+##ALB + EC2 + Route53用Blueprint
+from blog.views.alb_ec2_route53 import alb_ec2_route53
+app.register_blueprint(alb_ec2_route53)
