@@ -30,13 +30,11 @@ module "dev" {
   private_subnets    = var.private_subnets
   public_subnet_ids  = module.dev.public_subnet_ids
   private_subnet_ids = module.dev.private_subnet_ids
+  count_number       = var.count_number
   ami                = var.ami
   key_name           = var.key_name
   instance_type      = var.instance_type
   volume_type        = var.volume_type
   volume_size        = var.volume_size
-  instance_id        = module.dev.instance_id
-  zone_id            = var.zone_id
-  zone_name          = var.zone_name
-  sub_domain_1       = var.sub_domain_1
+  instance_ids       = module.dev.instance_ids
 }

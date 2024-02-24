@@ -10,8 +10,8 @@ output "private_subnet_ids" {
   value = module.dev.private_subnet_ids
 }
 
-output "instance_id" {
-  value = module.dev.instance_id
+output "instance_ids" {
+  value = module.dev.instance_ids
 }
 
 output "public_ip" {

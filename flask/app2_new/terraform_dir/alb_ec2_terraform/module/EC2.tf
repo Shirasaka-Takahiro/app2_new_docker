@@ -2,7 +2,6 @@
 resource "aws_instance" "ec2-web" {
   count = var.count_number
   ami   = var.ami
-  #subnet_id = var.public_subnet_ids
   subnet_id = element(values(aws_subnet.public_subnets)[*].id, count.index % 2)
   vpc_security_group_ids = [
     aws_security_group.common.id,
