@@ -1,6 +1,6 @@
 ##Bucket for ALB log
 resource "aws_s3_bucket" "bucket_alb_access_log" {
-  bucket = "${var.general_config["project_name"]}-${var.general_config["env"]}-alb-accesslog-bucket"
+  bucket        = "${var.general_config["project_name"]}-${var.general_config["env"]}-alb-accesslog-bucket"
   force_destroy = true
 
   tags = {

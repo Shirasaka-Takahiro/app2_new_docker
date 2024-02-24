@@ -50,14 +50,16 @@ resource "aws_lb_listener" "alb-listener" {
   protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
   }
 }
 
 ##Attach target group to the alb
 resource "aws_lb_target_group_attachment" "attach_tg-to-alb" {
-  target_id        = var.instance_id
+  #target_id        = var.instance_id
+  count            = length(var.instance_ids)
+  target_id        = element(var.instance_ids, count.index % 2)
   target_group_arn = aws_lb_target_group.tg.arn
   port             = 80
 }

@@ -50,7 +50,37 @@
             </div>
 
             <div class="form-group">
-                <label for="public_key">公開鍵:</label>
+                <label for="count_number">Count of EC2:</label>
+                <input type="text" class="form-control" id="count_number" name="count_number" required>
+                <div>Ex: 1</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ami">AMI of EC2:</label>
+                <input type="text" class="form-control" id="ami" name="ami" required>
+                <div>Ex: AmazonLinux2 → ami-0d889f77081190db1</div>
+            </div>
+
+            <div class="form-group">
+                <label for="instance_type">Instance Type of EC2:</label>
+                <input type="text" class="form-control" id="instance_type" name="instance_type" required>
+                <div>Ex: t3.micro</div>
+            </div>
+
+            <div class="form-group">
+                <label for="volume_type">Volume Type of EC2:</label>
+                <input type="text" class="form-control" id="volume_type" name="volume_type" required>
+                <div>Ex: gp2</div>
+            </div>
+
+            <div class="form-group">
+                <label for="volume_size">Volume Size of EC2:</label>
+                <input type="text" class="form-control" id="volume_size" name="volume_size" required>
+                <div>Ex: 100</div>
+            </div>
+
+            <div class="form-group">
+                <label for="public_key">Public Key of EC2:</label>
                 <textarea class="form-control" id="public_key" name="public_key"></textarea>
             </div>
             

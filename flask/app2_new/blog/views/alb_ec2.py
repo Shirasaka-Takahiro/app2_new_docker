@@ -199,6 +199,12 @@ def alb_ec2_tf_plan():
                 env = request.form.get('env')
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
+                project_name = request.form.get('project_name')
+                count_number = request.form.get('count_number')
+                ami = request.form.get('ami')
+                instance_type = request.form.get('instance_type')
+                volume_type = request.form.get('volume_type')
+                volume_size = request.form.get('volume_size')
 
                 tf_vars = {
                     "general_config": {
@@ -206,7 +212,12 @@ def alb_ec2_tf_plan():
                         "env": env
                     },
                     "access_key": access_key,
-                    "secret_key": secret_key
+                    "secret_key": secret_key,
+                    "count_number": count_number,
+                    "ami": ami,
+                    "instance_type": instance_type,
+                    "volume_type": volume_type,
+                    "volume_size": volume_size
                 }
 
                 with open('/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_terraform/env/dev/terraform.tfvars.json', 'w') as f:
@@ -307,10 +318,16 @@ def alb_ec2_tf_apply():
                         f.write(public_key)
 
                 ##terraform.tfvarsの作成
-                project_name = request.form.get('project_name')
-                env = request.form.get('env')
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
+                project_name = request.form.get('project_name')
+                env = request.form.get('env')
+                project_name = request.form.get('project_name')
+                count_number = request.form.get('count_number')
+                ami = request.form.get('ami')
+                instance_type = request.form.get('instance_type')
+                volume_type = request.form.get('volume_type')
+                volume_size = request.form.get('volume_size')
 
                 tf_vars = {
                     "general_config": {
@@ -318,7 +335,12 @@ def alb_ec2_tf_apply():
                         "env": env
                     },
                     "access_key": access_key,
-                    "secret_key": secret_key
+                    "secret_key": secret_key,
+                    "count_number": count_number,
+                    "ami": ami,
+                    "instance_type": instance_type,
+                    "volume_type": volume_type,
+                    "volume_size": volume_size
                 }
 
                 with open('/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_terraform/env/dev/terraform.tfvars.json', 'w') as f:
@@ -420,6 +442,11 @@ def alb_ec2_tf_destroy():
                 env = request.form.get('env')
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
+                count_number = request.form.get('count_number')
+                ami = request.form.get('ami')
+                instance_type = request.form.get('instance_type')
+                volume_type = request.form.get('volume_type')
+                volume_size = request.form.get('volume_size')
 
                 tf_vars = {
                     "general_config": {
@@ -427,7 +454,12 @@ def alb_ec2_tf_destroy():
                         "env": env
                     },
                     "access_key": access_key,
-                    "secret_key": secret_key
+                    "secret_key": secret_key,
+                    "count_number": count_number,
+                    "ami": ami,
+                    "instance_type": instance_type,
+                    "volume_type": volume_type,
+                    "volume_size": volume_size
                 }
 
                 with open('/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_terraform/env/dev/terraform.tfvars.json', 'w') as f:
