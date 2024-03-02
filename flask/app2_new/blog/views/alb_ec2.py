@@ -200,6 +200,9 @@ def alb_ec2_tf_plan():
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
                 project_name = request.form.get('project_name')
+                operation_sg_1 = request.form.get('operation_sg_1')
+                operation_sg_2 = request.form.get('operation_sg_2')
+                operation_sg_3 = request.form.get('operation_sg_3')
                 count_number = request.form.get('count_number')
                 ami = request.form.get('ami')
                 instance_type = request.form.get('instance_type')
@@ -213,6 +216,9 @@ def alb_ec2_tf_plan():
                     },
                     "access_key": access_key,
                     "secret_key": secret_key,
+                    "operation_sg_1": [operation_sg_1],
+                    "operation_sg_2": [operation_sg_2],
+                    "operation_sg_3": [operation_sg_3],
                     "count_number": count_number,
                     "ami": ami,
                     "instance_type": instance_type,
@@ -318,11 +324,14 @@ def alb_ec2_tf_apply():
                         f.write(public_key)
 
                 ##terraform.tfvarsの作成
+                project_name = request.form.get('project_name')
+                env = request.form.get('env')
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
                 project_name = request.form.get('project_name')
-                env = request.form.get('env')
-                project_name = request.form.get('project_name')
+                operation_sg_1 = request.form.get('operation_sg_1')
+                operation_sg_2 = request.form.get('operation_sg_2')
+                operation_sg_3 = request.form.get('operation_sg_3')
                 count_number = request.form.get('count_number')
                 ami = request.form.get('ami')
                 instance_type = request.form.get('instance_type')
@@ -336,6 +345,9 @@ def alb_ec2_tf_apply():
                     },
                     "access_key": access_key,
                     "secret_key": secret_key,
+                    "operation_sg_1": [operation_sg_1],
+                    "operation_sg_2": [operation_sg_2],
+                    "operation_sg_3": [operation_sg_3],
                     "count_number": count_number,
                     "ami": ami,
                     "instance_type": instance_type,
@@ -442,6 +454,10 @@ def alb_ec2_tf_destroy():
                 env = request.form.get('env')
                 access_key = request.form.get('aws_access_key')
                 secret_key = request.form.get('aws_secret_key')
+                project_name = request.form.get('project_name')
+                operation_sg_1 = request.form.get('operation_sg_1')
+                operation_sg_2 = request.form.get('operation_sg_2')
+                operation_sg_3 = request.form.get('operation_sg_3')
                 count_number = request.form.get('count_number')
                 ami = request.form.get('ami')
                 instance_type = request.form.get('instance_type')
@@ -455,6 +471,9 @@ def alb_ec2_tf_destroy():
                     },
                     "access_key": access_key,
                     "secret_key": secret_key,
+                    "operation_sg_1": [operation_sg_1],
+                    "operation_sg_2": [operation_sg_2],
+                    "operation_sg_3": [operation_sg_3],
                     "count_number": count_number,
                     "ami": ami,
                     "instance_type": instance_type,
