@@ -19,14 +19,6 @@ variable "secret_key" {
   type        = string
 }
 
-##Regions
-variable "regions" {
-  default = {
-    tokyo    = "ap-northeast-1"
-    virginia = "us-east-1"
-  }
-}
-
 ##Network
 variable "vpc" {
   description = "CIDR BLOCK for VPC"
@@ -88,6 +80,20 @@ variable "private_subnets" {
   }
 }
 
+##Security Group CIDR
+variable "operation_sg_1_cidr" {
+  default = ["0.0.0.0/0"]
+}
+
+variable "operation_sg_2_cidr" {
+  default = ["0.0.0.0/0"]
+}
+
+variable "operation_sg_3_cidr" {
+  default = ["0.0.0.0/0"]
+}
+
+
 ##EC2
 variable "count_number" {
   description = "Number of ec2 instance"
@@ -111,11 +117,24 @@ variable "volume_type" {
 
 variable "volume_size" {
   description = "The size of root block device"
-  default     = ""
+  type        = string
 }
 
 variable "key_name" {
   description = "key name of the key pair"
   type        = string
   default     = "example.pub"
+}
+
+##Route53
+variable "zone_id" {
+  description = "Zone id on Route53"
+  type        = string
+  default     = ""
+}
+
+variable "zone_name" {
+  description = "Zone id on Route53"
+  type        = string
+  default     = ""
 }
