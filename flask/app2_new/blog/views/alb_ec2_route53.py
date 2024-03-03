@@ -365,7 +365,7 @@ def alb_ec2_route53_tf_apply():
                     json.dump(tf_vars, f)
         
                 # terraform applyを実行
-                apply_result = subprocess.run(['terraform', 'apply'], cwd='/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_route53_terraform/env/dev', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                apply_result = subprocess.run(['terraform', 'apply', '-auto-approve'], cwd='/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_route53_terraform/env/dev', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
                 # Terraform applyの出力を整形してファイルに書き込む
                 formatted_output = format_terraform_output(apply_result.stdout)
@@ -399,7 +399,7 @@ def alb_ec2_route53_tf_apply():
     return render_template('alb_ec2_route53/alb_ec2_route53_tf_apply.html', active_workspace=active_workspace, user_projects=user_projects)
 
 ##Terraform Applyの実行結果確認
-@alb_ec2_route53.route('/tf_exec/alb_ec2_route53_route53/view_applyn_output')
+@alb_ec2_route53.route('/tf_exec/alb_ec2_route53_route53/view_apply_output')
 @login_required
 def alb_ec2_route53_view_apply_output():
     try:
@@ -428,6 +428,139 @@ def view_project_apply_output(project_id):
                     with open(output_filepath, 'r') as apply_output_file:
                         apply_output = apply_output_file.read()
                     return render_template('alb_ec2_route53/apply_output.html', apply_output=apply_output)
+                except FileNotFoundError:
+                    flash('実行結果ファイルが見つかりません', 'error')
+            else:
+                flash('実行結果が見つかりません', 'error')
+        except FileNotFoundError:
+            flash('実行結果ファイルが見つかりません', 'error')
+    else:
+        flash('プロジェクトが見つかりません', 'error')
+
+    # ここに到達するときはどこかでエラーが発生している場合や、ファイルが存在しない場合
+    return redirect(url_for('dashboard_func.dashboard'))
+
+##Terraform Destroy 実行機能
+@alb_ec2_route53.route('/tf_exec/alb_ec2_route53/tf_destroy', methods=['POST', 'GET'])
+@login_required
+def alb_ec2_route53_tf_destroy():
+    if request.method == 'POST':
+        project_id = request.form['project_id']
+        project = Project.query.get(project_id)
+        if project:
+            try:
+                UPLOAD_DIR = '/home/'
+                public_key = request.form.get('public_key')
+                if public_key:
+                    # セキュアなファイル名を生成して保存
+                    new_filename = 'example.pub'
+                    save_path = os.path.join(UPLOAD_DIR, new_filename)
+                    with open(save_path, 'w') as f:
+                        f.write(public_key)
+
+                ##terraform.tfvarsの作成
+                project_name = request.form.get('project_name')
+                env = request.form.get('env')
+                access_key = request.form.get('aws_access_key')
+                secret_key = request.form.get('aws_secret_key')
+                project_name = request.form.get('project_name')
+                operation_sg_1 = request.form.get('operation_sg_1')
+                operation_sg_2 = request.form.get('operation_sg_2')
+                operation_sg_3 = request.form.get('operation_sg_3')
+                count_number = request.form.get('count_number')
+                ami = request.form.get('ami')
+                instance_type = request.form.get('instance_type')
+                volume_type = request.form.get('volume_type')
+                volume_size = request.form.get('volume_size')
+                zone_id = request.form.get('zone_id')
+                zone_name = request.form.get('zone_name')
+
+                tf_vars = {
+                    "general_config": {
+                        "project_name": project_name,
+                        "env": env
+                    },
+                    "access_key": access_key,
+                    "secret_key": secret_key,
+                    "operation_sg_1": [operation_sg_1],
+                    "operation_sg_2": [operation_sg_2],
+                    "operation_sg_3": [operation_sg_3],
+                    "count_number": count_number,
+                    "ami": ami,
+                    "instance_type": instance_type,
+                    "volume_type": volume_type,
+                    "volume_size": volume_size,
+                    "zone_id": zone_id,
+                    "zone_name": zone_name
+                }
+
+                with open('/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_route53_terraform/env/dev/terraform.tfvars.json', 'w') as f:
+                    json.dump(tf_vars, f)
+        
+                # terraform destroyを実行
+                destroy_result = subprocess.run(['terraform', 'destroy', '-auto-approve'], cwd='/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_route53_terraform/env/dev', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                # Terraform destroyの出力を整形してファイルに書き込む
+                formatted_output = format_terraform_output(destroy_result.stdout)
+
+                # Terraform destroyの出力をファイルに書き込む
+                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2_route53/destroy_output.html', 'w') as destroy_output_file:
+                    destroy_output_file.write(formatted_output)
+
+                if current_user.is_authenticated:
+                    user_id = current_user.id
+                    new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2_route53/destroy_output.html', project=project, user_id=user_id)
+                    db.session.add(new_execution)
+                    db.session.commit()
+
+                    flash('Destroyが成功しました', 'success')
+                    return render_template('alb_ec2_route53/alb_ec2_route53_tf_destroy.html')
+
+            except subprocess.CalledProcessError as e:
+                # エラーメッセージを整形してファイルに書き込む
+                error_output = e.stderr.decode('utf-8')
+                formatted_error_output = format_terraform_output(error_output)
+
+                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2_route53/destroy_output.html', 'w') as destroy_output_file:
+                    destroy_output_file.write(formatted_error_output)
+
+                flash('Destroyに失敗しました。実行結果を確認してください', 'error')
+                return render_template('alb_ec2_route53/alb_ec2_route53_tf_destroy.html')
+            
+    active_workspace = alb_ec2_route53_get_active_workspace()
+    user_projects = current_user.projects
+    return render_template('alb_ec2_route53/alb_ec2_route53_tf_destroy.html', active_workspace=active_workspace, user_projects=user_projects)
+
+##Terraform destroyの実行結果確認
+@alb_ec2_route53.route('/tf_exec/alb_ec2_route53_route53/view_destroy_output')
+@login_required
+def alb_ec2_route53_view_destroy_output():
+    try:
+        with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2_route53/destroy_output.html', 'r') as destroy_output_file:
+            destroy_output = destroy_output_file.read()
+        return render_template('alb_ec2_route53/destroy_output.html', destroy_output=destroy_output)
+    except FileNotFoundError:
+        flash('実行結果ファイルが見つかりません', 'error')
+        return redirect(url_for('tf_destroy'))
+
+# プロジェクトの destroy_output 表示ルート
+@alb_ec2_route53.route('/view_project_destroy_output/<int:project_id>')
+@login_required
+def view_project_destroy_output(project_id):
+    project = Project.query.get(project_id)
+
+    if project:
+        try:
+            # 最新の TerraformExecution レコードを取得
+            latest_execution = TerraformExecution.query.filter_by(project_relation=project).order_by(TerraformExecution.timestamp.desc()).first()
+
+            if latest_execution:
+                output_filepath = latest_execution.output_path
+
+                try:
+                    with open(output_filepath, 'r') as destroy_output_file:
+                        destroy_output = destroy_output_file.read()
+                    return render_template('alb_ec2_route53/destroy_output.html', destroy_output=destroy_output)
                 except FileNotFoundError:
                     flash('実行結果ファイルが見つかりません', 'error')
             else:

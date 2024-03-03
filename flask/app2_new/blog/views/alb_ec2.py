@@ -487,10 +487,10 @@ def alb_ec2_tf_destroy():
                 # terraform destoryを実行
                 destroy_result = subprocess.run(['terraform', 'destroy', '-auto-approve'], cwd='/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_terraform/env/dev', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-                # Terraform Applyの出力を整形してファイルに書き込む
+                # Terraform Destroyの出力を整形してファイルに書き込む
                 formatted_output = format_terraform_output(destroy_result.stdout)
 
-                # Terraform Apllyの出力をファイルに書き込む
+                # Terraform Destroyの出力をファイルに書き込む
                 with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'w') as destroy_output_file:
                     destroy_output_file.write(formatted_output)
 
@@ -553,17 +553,3 @@ def view_project_destroy_output(project_id):
         flash('プロジェクトが見つかりません', 'error')
 
     return redirect(url_for('dashboard_func.dashboard'))
-
-@alb_ec2.route('/tf_exec/alb_ec2/tf_exec_alb_ec2_delete_tfvars', methods=['GET', 'POST'])
-@login_required
-def tf_exec_alb_ec2_delete_tfvars():
-    tfvars_path = '/var/www/vhosts/terraform-gui.com/public_html/terraform_dir/alb_ec2_terraform/env/dev/terraform.tfvars.json'
-
-    if request.method == 'POST':
-        # POSTリクエストがあった場合、削除処理を実行
-        if os.path.exists(tfvars_path):
-            os.remove(tfvars_path)
-        else:
-            flash('tfvarsファイルが見つかりません', 'error')
-    return render_template('alb_ec2/alb_ec2_tf_destroy.html')
-    flash('tfvarsファイルを削除しました', 'success')

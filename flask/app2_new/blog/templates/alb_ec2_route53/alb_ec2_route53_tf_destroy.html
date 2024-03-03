@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">Terraform Plan 実行画面</h1>
-        <form id="planForm" method="POST" enctype="multipart/form-data" onsubmit="return handlePlan()">
+        <h1 class="mb-4">Terraform Destroy 実行画面</h1>
+        <form id="destroy" method="POST" enctype="multipart/form-data" onsubmit="return handleDestroy()">
             <h2>Active Workspace</h2>
             <p>{{ active_workspace }}</p>
 
@@ -115,25 +115,25 @@
                 <div>Ex: example.com</div>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="planButton">
-                <span id="planSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                Plan
+            <button type="submit" class="btn btn-danger" id="destroyButton">
+                <span id="destroySpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                Destroy
             </button>
         </form>
-        <a class="" href="{{ url_for('alb_ec2_route53.alb_ec2_route53_view_plan_output') }}" target="_blank">実行結果画面</a>
+        <a class="" href="{{ url_for('alb_ec2_route53.alb_ec2_route53_view_destroy_output') }}" target="_blank">実行結果画面</a>
         <a class="" href="{{ url_for('alb_ec2_route53.tf_exec_alb_ec2_route53') }}">戻る</a>
     </div>
 
     <script>
-        function handlePlan() {
+        function handleDestroy() {
             // ボタンを無効にし、ぐるぐる回るアイコンを表示する
-            document.getElementById("planButton").disabled = true;
-            document.getElementById("planSpinner").style.display = "inline-block";
+            document.getElementById("destroyButton").disabled = true;
+            document.getElementById("destroySpinner").style.display = "inline-block";
             
             // フォームが送信された後、ぐるぐるを元のボタンに戻す
-            document.getElementById("planForm").addEventListener("submit", function() {
-                document.getElementById("planButton").disabled = false;
-                document.getElementById("planSpinner").style.display = "none";
+            document.getElementById("destroyForm").addEventListener("submit", function() {
+                document.getElementById("destroyButton").disabled = false;
+                document.getElementById("destroynSpinner").style.display = "none";
             });
             
             return true; // フォームを送信する
