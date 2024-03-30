@@ -7,7 +7,7 @@
     <ul class="list-group">
         {% for project in user_projects %}
             <li class="list-group-item">
-                {{ project.name }}
+                プロジェクト名：{{ project.name }}
                 {% if project.terraform_executions %}
                 <p>実行者: {{ project.terraform_executions[-1].user_relation.username }}</p>
                 {% else %}

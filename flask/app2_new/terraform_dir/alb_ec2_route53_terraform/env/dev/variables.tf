@@ -93,6 +93,19 @@ variable "operation_sg_3_cidr" {
   default = ["0.0.0.0/0"]
 }
 
+# ##Security Group CIDR
+# variable "operation_sg_1_cidr" {
+#   type        = list(string)
+# }
+
+# variable "operation_sg_2_cidr" {
+#   type        = list(string)
+# }
+
+# variable "operation_sg_3_cidr" {
+#   type        = list(string)
+# }
+
 
 ##EC2
 variable "count_number" {
