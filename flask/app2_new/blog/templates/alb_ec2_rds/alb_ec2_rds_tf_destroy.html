@@ -1,0 +1,211 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terraform GUI</title>
+    <!-- Add Bootstrap CSS link here -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Terraform Destroy 実行画面</h1>
+        <form id="destroy" method="POST" enctype="multipart/form-data" onsubmit="return handleDestroy()">
+            <h2>Active Workspace</h2>
+            <p>{{ active_workspace }}</p>
+
+            <div class="form-group">
+                <label for="project">Project:</label>
+                <select class="form-control" id="project" name="project_id" required>
+                    {% for project in user_projects %}
+                        <option value="{{ project.id }}">{{ project.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="aws_access_key">AWS Access Key:</label>
+                <input type="text" class="form-control" id="aws_access_key" name="aws_access_key" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="aws_secret_key">AWS Secret Key:</label>
+                <input type="text" class="form-control" id="aws_secret_key" name="aws_secret_key" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="aws_region">AWS Region:</label>
+                <input type="text" class="form-control" id="aws_region" name="aws_region" required>
+            </div>
+
+            <div class="form-group">
+                <label for="project_name">Project Name:</label>
+                <input type="text" class="form-control" id="project_name" name="project_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="env">Environment:</label>
+                <input type="text" class="form-control" id="env" name="env" required>
+            </div>
+
+            <div class="form-group">
+                <label for="env">operation_sg_1 IP for SSH:</label>
+                <input type="text" class="form-control" id="operation_sg_1" name="operation_sg_1" required>
+                <div>Ex: 0.0.0.0/0</div>
+            </div>
+
+            <div class="form-group">
+                <label for="env">operation_sg_2 IP for SSH:</label>
+                <input type="text" class="form-control" id="operation_sg_2" name="operation_sg_2" required>
+                <div>Ex: 0.0.0.0/0</div>
+            </div>
+
+            <div class="form-group">
+                <label for="env">operation_sg_3 IP for SSH:</label>
+                <input type="text" class="form-control" id="operation_sg_3" name="operation_sg_3" required>
+                <div>Ex: 0.0.0.0/0</div>
+            </div>
+
+            <div class="form-group">
+                <label for="count_number">Count of EC2:</label>
+                <input type="text" class="form-control" id="count_number" name="count_number" required>
+                <div>Ex: 1</div>
+            </div>
+
+            <div class="form-group">
+                <label for="ami">AMI of EC2:</label>
+                <input type="text" class="form-control" id="ami" name="ami" required>
+                <div>Ex: AmazonLinux2 → ami-0d889f77081190db1</div>
+            </div>
+
+            <div class="form-group">
+                <label for="instance_type">Instance Type of EC2:</label>
+                <input type="text" class="form-control" id="instance_type" name="instance_type" required>
+                <div>Ex: t3.micro</div>
+            </div>
+
+            <div class="form-group">
+                <label for="volume_type">Volume Type of EC2:</label>
+                <input type="text" class="form-control" id="volume_type" name="volume_type" required>
+                <div>Ex: gp2</div>
+            </div>
+
+            <div class="form-group">
+                <label for="volume_size">Volume Size of EC2:</label>
+                <input type="text" class="form-control" id="volume_size" name="volume_size" required>
+                <div>Ex: 100</div>
+            </div>
+
+            <div class="form-group">
+                <label for="engine_name">Engine Name of RDS Option Group:</label>
+                <input type="text" class="form-control" id="engine_name" name="engine_name" required>
+                <div>Ex: mysql</div>
+            </div>
+
+            <div class="form-group">
+                <label for="major_engine_version">Major Engine Version of RDS Option Group:</label>
+                <input type="text" class="form-control" id="major_engine_version" name="major_engine_version" required>
+                <div>Ex: 8.0</div>
+            </div>
+
+            <div class="form-group">
+                <label for="engine">Engine Name of RDS Instance:</label>
+                <input type="text" class="form-control" id="engine" name="engine" required>
+                <div>Ex: mysql</div>
+            </div>
+
+            <div class="form-group">
+                <label for="engine_version">Engine Version of RDS Instance:</label>
+                <input type="text" class="form-control" id="engine_version" name="engine_version" required>
+                <div>Ex: 8.0</div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Root Username of RDS Instance:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+                <div>Ex: root</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Root User Password of RDS Instance:</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+                <div>Ex: password</div>
+            </div>
+
+            <div class="form-group">
+                <label for="instance_class">Instance Class of RDS Instance:</label>
+                <input type="text" class="form-control" id="instance_class" name="instance_class" required>
+                <div>Ex: db.t3.medium</div>
+            </div>
+
+            <div class="form-group">
+                <label for="storage_type">Storage Type of RDS Instance:</label>
+                <input type="text" class="form-control" id="storage_type" name="storage_type" required>
+                <div>Ex: gp2</div>
+            </div>
+
+            <div class="form-group">
+                <label for="allocated_storage">Storage Volume of RDS Instance:</label>
+                <input type="text" class="form-control" id="allocated_storage" name="allocated_storage" required>
+                <div>Ex: 20</div>
+            </div>
+
+            <div class="form-group">
+                <label for="multi_az">Enable or Disable Multi AZ, for RDS Instance:</label>
+                <input type="text" class="form-control" id="multi_az" name="multi_az" required>
+                <div>true or false</div>
+            </div>
+
+            <div class="form-group">
+                <label for="auto_minor_version_upgrade">Enable or Disable Auto Minor Version Upgrade, for RDS Instance:</label>
+                <input type="text" class="form-control" id="auto_minor_version_upgrade" name="auto_minor_version_upgrade" required>
+                <div>true or false</div>
+            </div>
+
+            <div class="form-group">
+                <label for="backup_retention_period">Backup Retention Period of RDS Instance:</label>
+                <input type="text" class="form-control" id="backup_retention_period" name="backup_retention_period" required>
+                <div>Ex: 2</div>
+            </div>
+
+            <div class="form-group">
+                <label for="deletion_protection">Enable or Disable Deletion Protection, for RDS Instance:</label>
+                <input type="text" class="form-control" id="deletion_protection" name="deletion_protection" required>
+                <div>true or false</div>
+            </div>
+
+            <div class="form-group">
+                <label for="public_key">Public Key of EC2:</label>
+                <textarea class="form-control" id="public_key" name="public_key"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-danger" id="destroyButton">
+                <span id="destroySpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                Destroy
+            </button>
+        </form>
+        <a class="" href="{{ url_for('alb_ec2_rds.alb_ec2_rds_view_destroy_output') }}" target="_blank">実行結果画面</a>
+        <a class="" href="{{ url_for('alb_ec2_rds.tf_exec_alb_ec2_rds') }}">戻る</a>
+    </div>
+
+    <script>
+        function handleDestroy() {
+            // ボタンを無効にし、ぐるぐる回るアイコンを表示する
+            document.getElementById("destroyButton").disabled = true;
+            document.getElementById("destroySpinner").style.display = "inline-block";
+            
+            // フォームが送信された後、ぐるぐるを元のボタンに戻す
+            document.getElementById("destroyForm").addEventListener("submit", function() {
+                document.getElementById("destroyButton").disabled = false;
+                document.getElementById("destroynSpinner").style.display = "none";
+            });
+            
+            return true; // フォームを送信する
+        }
+    </script>
+</body>
+</html>
+
+{% endblock %}
