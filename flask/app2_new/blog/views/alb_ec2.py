@@ -109,13 +109,17 @@ def alb_ec2_tf_init():
                 formatted_output = format_terraform_output(init_result.stdout)
 
                 # Terraform initの出力をファイルに書き込む
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'w') as init_output_file:
+                # プロジェクトIDをファイル名に付与してファイルに書き込む
+                init_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output_{project_id}.html'
+                # with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'w') as init_output_file:
+                with open(init_output_file_path, 'w') as init_output_file:
                     init_output_file.write(formatted_output)
                 
                 # ユーザーがログインしていることを確認し、ログインしていればuser_idを取得
                 if current_user.is_authenticated:
                     user_id = current_user.id
-                    new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', project=project, user_id=user_id)
+                    # new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', project=project, user_id=user_id)
+                    new_execution = TerraformExecution(output_path=init_output_file_path, project=project, user_id=user_id)
                     db.session.add(new_execution)
                     db.session.commit()
 
@@ -127,8 +131,12 @@ def alb_ec2_tf_init():
                 error_output = e.stderr.decode('utf-8')
                 formatted_error_output = format_terraform_output(error_output)
 
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'w') as init_output_file:
-                    init_output_file.write(formatted_error_output)
+                # with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'w') as init_output_file:
+                #     init_output_file.write(formatted_error_output)
+                                # プロジェクトIDをファイル名に付与してエラー出力をファイルに書き込む
+                error_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output_error_{project_id}.html'
+                with open(error_output_file_path, 'w') as error_output_file:
+                    error_output_file.write(formatted_error_output)
 
                 flash('Initに失敗しました。実行結果を確認してください', 'error')
                 return render_template('alb_ec2/alb_ec2_tf_init.html')
@@ -142,7 +150,13 @@ def alb_ec2_tf_init():
 @login_required
 def alb_ec2_view_init_output():
     try:
-        with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'r') as init_output_file:
+        # プロジェクトIDを取得
+        project_id = request.form['project_id']
+        # プロジェクトIDを含むファイル名を生成
+        init_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output_{project_id}.html'
+
+        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'r') as init_output_file:
+        with open(init_output_file_path, 'r') as init_output_file:
             init_output = init_output_file.read()
         return render_template('alb_ec2/init_output.html', init_output=init_output)
     except FileNotFoundError:
@@ -161,9 +175,12 @@ def view_project_init_output(project_id):
             latest_execution = TerraformExecution.query.filter_by(project_relation=project).order_by(TerraformExecution.timestamp.desc()).first()
 
             if latest_execution:
-                with open(latest_execution.output_path, 'r') as init_output_file:
+                output_path_with_project_id = f"{latest_execution.output_path}"
+                # with open(latest_execution.output_path, 'r') as init_output_file:
+                with open(output_path_with_project_id, 'r') as init_output_file:
                     init_output = init_output_file.read()
-                return render_template('alb_ec2/init_output.html', init_output=init_output)
+                #return render_template('alb_ec2/init_output_.html', init_output=init_output)
+                return render_template(f'alb_ec2/init_output_{project_id}.html', init_output=init_output)
             else:
                 flash('実行結果が見つかりません', 'error')
                 return redirect(url_for('dashboard_func.dashboard'))
