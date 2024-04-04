@@ -191,8 +191,6 @@ def view_project_init_output(project_id):
         flash('プロジェクトが見つかりません', 'error')
         return redirect(url_for('dashboard_func.dashboard'))
 
-#UPLOAD_DIR = '/home/'
-
 ##Terraform Plan 実行機能
 @alb_ec2.route('/tf_exec/alb_ec2/tf_plan', methods=['POST', 'GET'])
 @login_required
@@ -253,12 +251,15 @@ def alb_ec2_tf_plan():
                 formatted_output = format_terraform_output(plan_result.stdout)
 
                 # Terraform planの出力をファイルに書き込む
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'w') as plan_output_file:
+                plan_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output_{project_id}.html'
+                #with open(f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output_{project_id}.html', 'w') as plan_output_file:
+                with open(plan_output_file_path, 'w') as plan_output_file:
                     plan_output_file.write(formatted_output)
 
                 if current_user.is_authenticated:
                     user_id = current_user.id
-                    new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', project=project, user_id=user_id)
+                    #new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', project=project, user_id=user_id)
+                    new_execution = TerraformExecution(output_path=plan_output_file_path, project=project, user_id=user_id)
                     db.session.add(new_execution)
                     db.session.commit()
 
@@ -270,8 +271,13 @@ def alb_ec2_tf_plan():
                 error_output = e.stderr.decode('utf-8')
                 formatted_error_output = format_terraform_output(error_output)
 
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'w') as plan_output_file:
-                    plan_output_file.write(formatted_error_output)
+                #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'w') as plan_output_file:
+                #    plan_output_file.write(formatted_error_output)
+
+                error_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output_error_{project_id}.html'
+                with open(error_output_file_path, 'w') as error_output_file:
+                    error_output_file.write(formatted_error_output)
+
 
                 flash('Planに失敗しました。実行結果を確認してください', 'error')
                 return render_template('alb_ec2/alb_ec2_tf_plan.html')
@@ -285,7 +291,13 @@ def alb_ec2_tf_plan():
 @login_required
 def alb_ec2_view_plan_output():
     try:
-        with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'r') as plan_output_file:
+        # プロジェクトIDを取得
+        project_id = request.form['project_id']
+        # プロジェクトIDを含むファイル名を生成
+        plan_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output_{project_id}.html'
+
+        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'r') as plan_output_file:
+        with open(plan_output_file_path, 'r') as plan_output_file:
             plan_output = plan_output_file.read()
         return render_template('alb_ec2/plan_output.html', plan_output=plan_output)
     except FileNotFoundError:
@@ -304,23 +316,21 @@ def view_project_plan_output(project_id):
             latest_execution = TerraformExecution.query.filter_by(project_relation=project).order_by(TerraformExecution.timestamp.desc()).first()
 
             if latest_execution:
-                output_filepath = latest_execution.output_path
-
-                try:
-                    with open(output_filepath, 'r') as plan_output_file:
-                        plan_output = plan_output_file.read()
-                    return render_template('alb_ec2/plan_output.html', plan_output=plan_output)
-                except FileNotFoundError:
-                    flash('実行結果ファイルが見つかりません', 'error')
+                output_path_with_project_id = f"{latest_execution.output_path}"
+                with open(output_path_with_project_id, 'r') as plan_output_file:
+                    plan_output = plan_output_file.read()
+                    # with open(output_filepath, 'r') as plan_output_file:
+                    #     plan_output = plan_output_file.read()
+                return render_template(f'alb_ec2/plan_output_{project_id}.html', plan_output=plan_output)
             else:
                 flash('実行結果が見つかりません', 'error')
+                return redirect(url_for('dashboard_func.dashboard'))
         except FileNotFoundError:
             flash('実行結果ファイルが見つかりません', 'error')
+            return redirect(url_for('dashboard_func.dashboard'))
     else:
         flash('プロジェクトが見つかりません', 'error')
-
-    # ここに到達するときはどこかでエラーが発生している場合や、ファイルが存在しない場合
-    return redirect(url_for('dashboard_func.dashboard'))
+        return redirect(url_for('dashboard_func.dashboard'))
 
 ##Terraform Apply 実行機能
 @alb_ec2.route('/tf_exec/alb_ec2/tf_apply', methods=['POST', 'GET'])
@@ -382,12 +392,16 @@ def alb_ec2_tf_apply():
                 formatted_output = format_terraform_output(apply_result.stdout)
 
                 # Terraform Apllyの出力をファイルに書き込む
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'w') as apply_output_file:
+                apply_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output_{project_id}.html'
+                with open(apply_output_file_path, 'w') as apply_output_file:
                     apply_output_file.write(formatted_output)
+                #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'w') as apply_output_file:
+                #    apply_output_file.write(formatted_output)
 
                 if current_user.is_authenticated:
                     user_id = current_user.id
-                    new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', project=project, user_id=user_id)
+                    #new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', project=project, user_id=user_id)
+                    new_execution = TerraformExecution(output_path=apply_output_file_path, project=project, user_id=user_id)
                     db.session.add(new_execution)
                     db.session.commit()
 
@@ -399,8 +413,11 @@ def alb_ec2_tf_apply():
                 error_output = e.stderr.decode('utf-8')
                 formatted_error_output = format_terraform_output(error_output)
 
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'w') as apply_output_file:
-                    apply_output_file.write(formatted_error_output)
+                #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'w') as apply_output_file:
+                #    apply_output_file.write(formatted_error_output)
+                error_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output_error_{project_id}.html'
+                with open(error_output_file_path, 'w') as error_output_file:
+                    error_output_file.write(formatted_error_output)
 
                 flash('Applyに失敗しました。実行結果を確認してください', 'error')
                 return render_template('alb_ec2/alb_ec2_tf_apply.html')
@@ -414,7 +431,14 @@ def alb_ec2_tf_apply():
 @login_required
 def alb_ec2_view_apply_output():
     try:
-        with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'r') as apply_output_file:
+        # プロジェクトIDを取得
+        project_id = request.form['project_id']
+        # プロジェクトIDを含むファイル名を生成
+        apply_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output_{project_id}.html'
+
+        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'r') as apply_output_file:
+            #apply_output = apply_output_file.read()
+        with open(apply_output_file_path, 'r') as apply_output_file:
             apply_output = apply_output_file.read()
         return render_template('alb_ec2/apply_output.html', apply_output=apply_output)
     except FileNotFoundError:
@@ -433,9 +457,13 @@ def view_project_apply_output(project_id):
             latest_execution = TerraformExecution.query.filter_by(project_relation=project).order_by(TerraformExecution.timestamp.desc()).first()
 
             if latest_execution:
-                with open(latest_execution.output_path, 'r') as apply_output_file:
+                output_path_with_project_id = f"{latest_execution.output_path}"
+                #with open(latest_execution.output_path, 'r') as apply_output_file:
+                    #apply_output = apply_output_file.read()
+                with open(output_path_with_project_id, 'r') as apply_output_file:
                     apply_output = apply_output_file.read()
-                return render_template('alb_ec2/apply_output.html', apply_output=apply_output)
+                #return render_template('alb_ec2/apply_output.html', apply_output=apply_output)
+                return render_template(f'alb_ec2/apply_output_{project_id}.html', apply_output=apply_output)
             else:
                 flash('実行結果が見つかりません', 'error')
                 return redirect(url_for('dashboard_func.dashboard'))
@@ -445,8 +473,6 @@ def view_project_apply_output(project_id):
     else:
         flash('プロジェクトが見つかりません', 'error')
         return redirect(url_for('dashboard_func.dashboard'))
-
-    return redirect(url_for('dashboard_func.dashboard'))
 
 ##Terraform Destroy 実行機能
 @alb_ec2.route('/tf_exec/alb_ec2/tf_destroy', methods=['POST', 'GET'])
@@ -508,12 +534,16 @@ def alb_ec2_tf_destroy():
                 formatted_output = format_terraform_output(destroy_result.stdout)
 
                 # Terraform Destroyの出力をファイルに書き込む
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'w') as destroy_output_file:
+                #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'w') as destroy_output_file:
+                #    destroy_output_file.write(formatted_output)
+                destroy_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output_{project_id}.html'
+                with open(destroy_output_file_path, 'w') as destroy_output_file:
                     destroy_output_file.write(formatted_output)
 
                 if current_user.is_authenticated:
                     user_id = current_user.id
-                    new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', project=project, user_id=user_id)
+                    #new_execution = TerraformExecution(output_path='/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', project=project, user_id=user_id)
+                    new_execution = TerraformExecution(output_path=destroy_output_file_path, project=project, user_id=user_id)
                     db.session.add(new_execution)
                     db.session.commit()
 
@@ -525,8 +555,12 @@ def alb_ec2_tf_destroy():
                 error_output = e.stderr.decode('utf-8')
                 formatted_error_output = format_terraform_output(error_output)
 
-                with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'w') as destroy_output_file:
-                    destroy_output_file.write(formatted_error_output)
+                #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'w') as destroy_output_file:
+                #    destroy_output_file.write(formatted_error_output)
+
+                error_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output_error_{project_id}.html'
+                with open(error_output_file_path, 'w') as error_output_file:
+                    error_output_file.write(formatted_error_output)
 
                 flash('Destroyに失敗しました。実行結果を確認してください', 'error')
                 return render_template('alb_ec2/alb_ec2_tf_destroy.html')
@@ -540,7 +574,14 @@ def alb_ec2_tf_destroy():
 @login_required
 def alb_ec2_view_destroy_output():
     try:
-        with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'r') as destroy_output_file:
+        # プロジェクトIDを取得
+        project_id = request.form['project_id']
+        # プロジェクトIDを含むファイル名を生成
+        destroy_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output_{project_id}.html'
+
+
+        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'r') as destroy_output_file:
+        with open(destroy_output_file_path, 'r') as destroy_output_file:
             destroy_output = destroy_output_file.read()
         return render_template('alb_ec2/destroy_output.html', destroy_output=destroy_output)
     except FileNotFoundError:
@@ -559,14 +600,18 @@ def view_project_destroy_output(project_id):
             latest_execution = TerraformExecution.query.filter_by(project_relation=project).order_by(TerraformExecution.timestamp.desc()).first()
 
             if latest_execution:
-                with open(latest_execution.output_path, 'r') as destroy_output_file:
+                output_path_with_project_id = f"{latest_execution.output_path}"
+                #with open(latest_execution.output_path, 'r') as destroy_output_file:
+                with open(output_path_with_project_id, 'r') as destroy_output_file:
                     destroy_output = destroy_output_file.read()
-                return render_template('alb_ec2/destroy_output.html', destroy_output=destroy_output)
+                #return render_template('alb_ec2/destroy_output.html', destroy_output=destroy_output)
+                return render_template(f'alb_ec2/destroy_output_{project_id}.html', destroy_output=destroy_output)
             else:
                 flash('実行結果が見つかりません', 'error')
+                return redirect(url_for('dashboard_func.dashboard'))
         except FileNotFoundError:
             flash('実行結果ファイルが見つかりません', 'error')
+            return redirect(url_for('dashboard_func.dashboard'))
     else:
         flash('プロジェクトが見つかりません', 'error')
-
-    return redirect(url_for('dashboard_func.dashboard'))
+        return redirect(url_for('dashboard_func.dashboard'))
