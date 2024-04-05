@@ -145,24 +145,6 @@ def alb_ec2_tf_init():
     user_projects = current_user.projects
     return render_template('alb_ec2/alb_ec2_tf_init.html', active_workspace=active_workspace, user_projects=user_projects)
 
-##Terraform Initの実行結果確認
-@alb_ec2.route('/tf_exec/alb_ec2/view_init_output')
-@login_required
-def alb_ec2_view_init_output():
-    try:
-        # プロジェクトIDを取得
-        project_id = request.form['project_id']
-        # プロジェクトIDを含むファイル名を生成
-        init_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output_{project_id}.html'
-
-        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/init_output.html', 'r') as init_output_file:
-        with open(init_output_file_path, 'r') as init_output_file:
-            init_output = init_output_file.read()
-        return render_template('alb_ec2/init_output.html', init_output=init_output)
-    except FileNotFoundError:
-        flash('実行結果ファイルが見つかりません', 'error')
-        return redirect(url_for('tf_init'))
-
 # プロジェクトの init_output 表示ルート
 @alb_ec2.route('/view_project_init_output/<int:project_id>')
 @login_required
@@ -286,24 +268,6 @@ def alb_ec2_tf_plan():
     user_projects = current_user.projects
     return render_template('alb_ec2/alb_ec2_tf_plan.html', active_workspace=active_workspace, user_projects=user_projects)
 
-##Terraform Planの実行結果確認
-@alb_ec2.route('/tf_exec/alb_ec2/view_plan_output')
-@login_required
-def alb_ec2_view_plan_output():
-    try:
-        # プロジェクトIDを取得
-        project_id = request.form['project_id']
-        # プロジェクトIDを含むファイル名を生成
-        plan_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output_{project_id}.html'
-
-        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/plan_output.html', 'r') as plan_output_file:
-        with open(plan_output_file_path, 'r') as plan_output_file:
-            plan_output = plan_output_file.read()
-        return render_template('alb_ec2/plan_output.html', plan_output=plan_output)
-    except FileNotFoundError:
-        flash('実行結果ファイルが見つかりません', 'error')
-        return redirect(url_for('tf_plan'))
-
 # プロジェクトの plan_output 表示ルート
 @alb_ec2.route('/view_project_plan_output/<int:project_id>')
 @login_required
@@ -425,25 +389,6 @@ def alb_ec2_tf_apply():
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
     return render_template('alb_ec2/alb_ec2_tf_apply.html', active_workspace=active_workspace, user_projects=user_projects)
-
-##Terraform Applyの実行結果確認
-@alb_ec2.route('/tf_exec/alb_ec2/view_apply_output')
-@login_required
-def alb_ec2_view_apply_output():
-    try:
-        # プロジェクトIDを取得
-        project_id = request.form['project_id']
-        # プロジェクトIDを含むファイル名を生成
-        apply_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output_{project_id}.html'
-
-        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/apply_output.html', 'r') as apply_output_file:
-            #apply_output = apply_output_file.read()
-        with open(apply_output_file_path, 'r') as apply_output_file:
-            apply_output = apply_output_file.read()
-        return render_template('alb_ec2/apply_output.html', apply_output=apply_output)
-    except FileNotFoundError:
-        flash('実行結果ファイルが見つかりません', 'error')
-        return redirect(url_for('tf_apply'))
 
 # プロジェクトの apply_output 表示ルート
 @alb_ec2.route('/view_project_apply_output/<int:project_id>')
@@ -568,25 +513,6 @@ def alb_ec2_tf_destroy():
     active_workspace = alb_ec2_get_active_workspace()
     user_projects = current_user.projects
     return render_template('alb_ec2/alb_ec2_tf_destroy.html', active_workspace=active_workspace, user_projects=user_projects)
-
-##Terraform Destroyの実行結果確認
-@alb_ec2.route('/tf_exec/alb_ec2/view_destroy_output')
-@login_required
-def alb_ec2_view_destroy_output():
-    try:
-        # プロジェクトIDを取得
-        project_id = request.form['project_id']
-        # プロジェクトIDを含むファイル名を生成
-        destroy_output_file_path = f'/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output_{project_id}.html'
-
-
-        #with open('/var/www/vhosts/terraform-gui.com/public_html/blog/templates/alb_ec2/destroy_output.html', 'r') as destroy_output_file:
-        with open(destroy_output_file_path, 'r') as destroy_output_file:
-            destroy_output = destroy_output_file.read()
-        return render_template('alb_ec2/destroy_output.html', destroy_output=destroy_output)
-    except FileNotFoundError:
-        flash('実行結果ファイルが見つかりません', 'error')
-        return redirect(url_for('alb_ec2.tf_destroy'))
 
 # プロジェクトの destroy_output 表示ルート
 @alb_ec2.route('/view_project_destroy_output/<int:project_id>')
