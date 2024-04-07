@@ -8,3 +8,4 @@ Jinja2==3.0.3
 PyMySQL==1.0.2
 SQLAlchemy==1.4.50
 zipp==3.6.0
+pyyaml==6.0.1

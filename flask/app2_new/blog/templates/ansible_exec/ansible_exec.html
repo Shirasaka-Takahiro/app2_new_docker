@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible GUI</title>
+</head>
+<body>
+    <h1>Ansible GUI</h1>
+    <form action="/ansible_exec" method="post">
+        <div class="form-group">
+            <label for="playbooks">Playbooks:</label><br>
+            <textarea rows="10" class="form-control" id="playbooks" name="playbooks"></textarea><br>
+        </div>
+        <div class="form-group">
+            <label for="inventory">Inventory:</label><br>
+            <textarea rows="10" class="form-control" id="inventory" name="inventory"></textarea><br>
+        </div>
+        <div class="form-group">
+            <label for="private_key">Private Key:</label><br>
+            <textarea rows="10" class="form-control" id="private_key" name="private_key"></textarea><br>
+        </div>
+        <div class="form-group">
+            <label for="group_vars">Group Vars:</label><br>
+            <textarea rows="10" class="form-control" id="group_vars" name="group_vars"></textarea><br>
+        </div>
+        <div>
+            <label for="server">Server:</label><br>
+            <select id="server" name="server">
+                <option value="centos7">CentOS 7</option>
+                <option value="ubuntu20">Ubuntu 20.04</option>
+                <!-- 他のサーバー名を追加 -->
+            </select><br><br>
+        </div>
+        <input type="submit" value="Execute Ansible">
+    </form>
+    <hr>
+    <h2>Execution Output:</h2>
+    <pre id="output"></pre>
+
+    <script>
+        // フォームのsubmitイベントをキャッチしてAjaxリクエストを送信し、結果を表示する
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault(); // フォームのデフォルト動作を無効にする
+
+            var form = new FormData(this); // フォームデータを取得
+
+            fetch('/ansible_exec', {
+                method: 'POST',
+                body: form
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('output').textContent = data; // 結果を表示
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
