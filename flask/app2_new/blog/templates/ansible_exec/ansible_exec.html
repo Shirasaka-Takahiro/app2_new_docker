@@ -42,30 +42,11 @@
                 <!-- 他のサーバー名を追加 -->
             </select><br><br>
         </div>
-        <button type="submit" class="btn btn-primary" id="runButton">Run</button>
+        <button type="submit" class="btn btn-primary" id="runButton" name="action" value="run">Run</button>
+        <button type="submit" class="btn btn-secondary" id="dryrunButton" name="action" value="dryrun">Dry Run</button>
     </form>
 
-    <!-- <script>
-        document.getElementById('runButton').addEventListener('click', function() {
-            executeAnsible();
-        });
-
-        function executeAnsible() {
-            var form = new FormData(document.getElementById('ansibleForm'));
-
-            fetch('/ansible_exec', {
-                method: 'POST',
-                body: form
-            })
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('output').textContent = data;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-    </script> -->
+    
 </body>
 </html>
 

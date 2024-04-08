@@ -63,13 +63,15 @@ def ansible_exec_func():
             if playbooks:
                 command.append(playbook_save_path)
 
+            if request.form['action'] == 'dryrun':  # ドライランボタンが押された場合
+                command.append('--check')  # --checkオプションを追加してドライランを実行
+
             result = subprocess.run(
-                command,
+                f'echo "yes" | {" ".join(command)}',  # "yes" を送信するように修正
                 cwd=f'/var/www/vhosts/terraform-gui.com/public_html/ansible_dir/{server_name}/',
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                stdin=subprocess.PIPE,  # 標準入力を設定
-                input=b'yes\n'  # 自動的に"Yes"を入力する
+                shell=True  # シェルコマンドを使用するために必要
             )
 
             if result.returncode == 0:
