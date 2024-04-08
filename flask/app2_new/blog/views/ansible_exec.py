@@ -67,7 +67,9 @@ def ansible_exec_func():
                 command,
                 cwd=f'/var/www/vhosts/terraform-gui.com/public_html/ansible_dir/{server_name}/',
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,  # 標準入力を設定
+                input=b'yes\n'  # 自動的に"Yes"を入力する
             )
 
             if result.returncode == 0:
