@@ -11,6 +11,6 @@ RUN pip install --upgrade pip \
     && pip install --upgrade setuptools \
     && pip install -r requirements.txt \
     && apt-get update -y \
-    && apt-get install -y vim less unzip \
+    && apt-get install -y vim less unzip ansible \
     && chmod +x /root/setup.sh \
     && /root/setup.sh
