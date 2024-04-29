@@ -55,6 +55,14 @@ app.register_blueprint(alb_ec2_route53)
 from blog.views.alb_ec2_rds import alb_ec2_rds
 app.register_blueprint(alb_ec2_rds)
 
+##Ansible Index
+from blog.views.ansible_index import ansible_index
+app.register_blueprint(ansible_index)
+
+##Ansible Example
+from blog.views.ansible_example import ansible_example
+app.register_blueprint(ansible_example)
+
 ##Ansible Execution
 from blog.views.ansible_exec import ansible_exec
 app.register_blueprint(ansible_exec)

@@ -19,7 +19,7 @@ ansible_exec = Blueprint('ansible_exec', __name__, template_folder="templates/an
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@ansible_exec.route('/ansible_exec', methods=['GET', 'POST'])
+@ansible_exec.route('/ansible_index/ansible_exec', methods=['GET', 'POST'])
 @login_required
 def ansible_exec_func():
     if request.method == 'POST':
