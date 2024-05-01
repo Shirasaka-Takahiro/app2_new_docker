@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible GUI</title>
+    <style>
+        textarea {
+            width: 80%;
+            height: 400px; /* テキストエリアの高さを固定 */
+        }
+        .border {
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .border pre {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ansible GUI</h1>
+    <h2>Vars for CentOS7 WordPress</h2>
+    <h3>※ここからそれぞれコピーして使ってね</h3>
+
+<label for="playbooks">Playbooks:</label>
+    <div class="border">
+        <pre>
+---
+- hosts: target_hosts
+  become: true
+  user: ansible-user
+  roles:
+    - access_test
+    - common/yum_update
+    - common/firewalld
+    - common/hostname
+    - common/selinux
+    - common/swap
+    - common/timezone
+    - common/tools
+    - common/user_add
+    - httpd
+    - mysql
+    - php
+    - wordpress        
+        </pre>
+    </div>
+
+<label for="group_vars">Group Vars:</label>
+    <div class="border">
+        <pre>
+---
+##create user
+user_name: test1
+user_password: Test1!
+#user_groups: test1
+                
+##change hostname
+host_name: test-web01
+                
+##Apache
+serveradmin: test1@example.com
+domain_name: test01.com
+                
+##MySQL
+root_password: Testtest991!
+db_user_name: test_user
+db_user_password: Kenshirou913!
+db_name: test_db
+                
+##WordPress URL
+wordpress_url: https://ja.wordpress.org/latest-ja.tar.gz
+db_host: localhost             
+        </pre>
+    </div>
+
+<label for="inventory">Inventory:</label>
+    <div class="border">
+        <pre>[target_hosts]
+192.168.33.76</pre>
+    </div>
+
+    <a class="" href="{{ url_for('ansible_example_list.ansible_example_list_func') }}">戻る</a>
+
+</body>
+</html>
+
+{% endblock %}

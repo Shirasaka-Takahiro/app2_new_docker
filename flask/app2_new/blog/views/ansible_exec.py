@@ -1,15 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash, Blueprint
+from flask import render_template, request, flash, Blueprint
 from blog import app
 from blog import db
 from blog.models.user import User
-from blog.models.user import Project
-from blog.models.user import TerraformExecution
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from blog import login_manager
-from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import login_required, current_user
 import subprocess
-import yaml
 import os
 
 ## Create Blueprint Object
@@ -75,11 +70,11 @@ def ansible_exec_func():
             )
 
             if result.returncode == 0:
-                flash('Ansible provisioning succeeded!', 'success')
+               flash('Ansible provisioning succeeded!', 'success')
             else:
-                flash('Ansible provisioning failed!', 'error')
-                flash(result.stderr.decode('utf-8'), 'error')
-
+              error_message = result.stderr.decode('utf-8')  # エラーメッセージを取得しデコード
+              flash(f'Ansible provisioning failed! Error: {error_message}', 'error')
+               
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
 

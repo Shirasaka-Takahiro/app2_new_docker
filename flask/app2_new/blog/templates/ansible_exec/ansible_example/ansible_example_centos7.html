@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible GUI</title>
+    <style>
+        textarea {
+            width: 80%;
+            height: 400px; /* テキストエリアの高さを固定 */
+        }
+        .border {
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .border pre {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ansible GUI</h1>
+    <h2>Vars for CentOS7</h2>
+    <h3>※ここからそれぞれコピーして使ってね</h3>
+
+    <label for="playbooks">Playbooks:</label>
+    <div class="border">
+        <pre>
+---
+- hosts: target_hosts
+  become: true
+  user: ansible-user
+  roles:
+    - access_test
+    - common/yum_update
+    - common/firewalld
+    - common/hostname
+    - common/selinux
+    - common/swap
+    - common/timezone
+    - common/tools
+    - common/user_add
+    - httpd
+    - nginx
+    - mysql
+    - php
+    - docker
+    - zabbix_agent
+    - zabbix_agent/zabbix_agent_mysql
+    - get_process_netstat    
+        </pre>
+    </div>
+
+<label for="group_vars">Group Vars:</label>
+    <div class="border">
+        <pre>
+---
+##create user
+user_name: test1
+user_password: Test1!
+#user_groups: test1
+
+##change hostname
+host_name: test-web01
+
+##Apache
+serveradmin: test@example.com
+domain_name: test.onya-lab.site
+
+##MySQL
+root_password: Testtest991!
+
+##dokcer-compose URL
+docker_compose_url: https://github.com/docker/compose/releases/download/1.24.1/docker-compose-Linux-x86_64
+
+##php version
+php_version: 74
+
+##php modules
+php_modules:
+  - "php"
+  - "php-cli"
+  - "php-devel"
+  - "php-common"
+  - "php-json"
+  - "php-xml"
+  - "php-mbstring"
+  - "php-pdo"
+  - "php-gd"
+  - "php-process"
+  - "php-intl"
+  - "php-mysql"
+  - "php-fpm"
+
+##zabbix repository URL
+zabbix_repository_url: https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
+
+##zabbix server IP
+zabbix_server_ip: 192.168.33.80
+
+##zabbix mysql pass
+zabbix_dbpass: Zabbixmysql991!          
+        </pre>
+    </div>
+
+<label for="inventory">Inventory:</label>
+    <div class="border">
+        <pre>
+[target_hosts]
+192.168.33.76</pre>
+    </div>
+
+    <a class="" href="{{ url_for('ansible_example_list.ansible_example_list_func') }}">戻る</a>
+
+</body>
+</html>
+
+{% endblock %}

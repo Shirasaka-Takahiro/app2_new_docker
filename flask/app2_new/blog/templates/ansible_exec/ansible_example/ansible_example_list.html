@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terraform GUI ALB + EC2</title>
+    <!-- Add Bootstrap CSS link here -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Ansible GUI</h1>
+        <a class="" href="{{ url_for('ansible_example.ansible_example_centos7') }}">CentOS7</a><br>
+        <a class="" href="{{ url_for('ansible_example.ansible_example_centos7_wordpress') }}">CentOS7 WordPress</a><br>
+        <a class="" href="{{ url_for('ansible_index.ansible_index_func') }}">戻る</a>
+    </div>
+</body>
+</html>
+{% endblock %}

@@ -16,13 +16,18 @@ import json
 import re
 
 ##Create Blueprint Object
-ansible_example = Blueprint('ansible_example', __name__, template_folder="templates/ansible_exec")
+ansible_example = Blueprint('ansible_example', __name__, template_folder="templates/ansible_exec/ansible_example")
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@ansible_example.route('/ansible_index/ansible_example', methods=['GET'])
+@ansible_example.route('/ansible_index/ansible_example_list/ansible_example_centos7', methods=['GET'])
 @login_required
-def ansible_example_func():
-    return render_template('ansible_exec/ansible_example.html')
+def ansible_example_centos7():
+    return render_template('ansible_exec/ansible_example/ansible_example_centos7.html')
+
+@ansible_example.route('/ansible_index/ansible_example_list/ansible_example_centos7_wordpress', methods=['GET'])
+@login_required
+def ansible_example_centos7_wordpress():
+    return render_template('ansible_exec/ansible_example/ansible_example_centos7_wordpress.html')

@@ -59,6 +59,10 @@ app.register_blueprint(alb_ec2_rds)
 from blog.views.ansible_index import ansible_index
 app.register_blueprint(ansible_index)
 
+##Ansible Example List
+from blog.views.ansible_example_list import ansible_example_list
+app.register_blueprint(ansible_example_list)
+
 ##Ansible Example
 from blog.views.ansible_example import ansible_example
 app.register_blueprint(ansible_example)
